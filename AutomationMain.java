@@ -8,7 +8,6 @@ public class AutomationMain {
 
 		DFA start = Automata.startCodon();
 	    DFA valid = Automata.validation();
-	    DFA combined = Automata.minimizedDFA();
 
         //PART B
         //-----------------------------------------------------------------------------------------------------------//
@@ -196,12 +195,46 @@ public class AutomationMain {
         //-----------------------------------------------------------------------------------------------------------//
 
 	    Scanner in = new Scanner(System.in);
-	    System.out.println("Please enter a  DNA sequence :");
-	    System.out.println("To run default inputs enter 'tests', and enter 'quit' to exit.\n");
+	    //System.out.println("Please enter a  DNA sequence :");
+	    //System.out.println("To run default inputs enter 'tests', and enter 'quit' to exit.\n");
 
 
 	    while (true) {
-	            System.out.print("Sequence> ");
+			System.out.println("\n=== DNA Sequence Pattern Analyzer ===");
+	        System.out.println("1. Enter DNA sequence");
+	        System.out.println("2. Run default test cases");
+	        System.out.println("3. Exit");
+	        System.out.print("Choose an option: ");
+
+	        if (!in.hasNextLine()) {
+	            break;
+	        }
+	        String choice = in.nextLine().trim();
+
+	        if (choice.equals("3")) {
+	            break;
+	        }
+
+	        if (choice.equals("2")) {
+	            runTests(start, "ATG", "ATGA", "ATGCCTA", "ATGTAA", "AT", "A", "", "TAG", "ATC", "GATG", "atg", "ATGX");
+				runTests(valid, "A", "G", "C", "T", "AGT", "ACGT", "AAAA", "", "ATGX", "x", "ATGCCTA", "AT G");
+				MinimizedDFA.runTests();
+	            continue;
+	        }
+	        if (!choice.equals("1")) {
+	            System.out.println("Invalid option. Please try again.");
+	            continue;
+	        }
+
+	        System.out.print("Enter DNA sequence: ");
+
+	        if (!in.hasNextLine()) {
+	            break;
+	        }
+
+	        String line = in.nextLine().trim().toUpperCase();
+
+	           /* System.out.print("Sequence> ");
 	            if (!in.hasNextLine()) break;
 	            String line = in.nextLine();
 
@@ -212,7 +245,7 @@ public class AutomationMain {
 	                runTests(valid, "A", "G", "C", "T", "AGT", "ACGT", "AAAA", "", "ATGX", "x", "ATGCCTA", "AT G");
 	                runTests(combined, "ATGATTAA", "ATGATTAG", "ATGATTGA", "ATGATATTAA", "ATGTAA", "ATGATAA", "ATGATCTAG");
 	                continue;
-	            }
+	            }*/
 
 	            System.out.println("Step 1 - " + valid.getName());
             boolean legal = valid.trace(line);
@@ -260,11 +293,13 @@ public class AutomationMain {
                     ? "the ε-NFA accepts the sequence.\n"
                     : "the ε-NFA rejects the sequence.\n"));
 
-            System.out.println("Step 6 - " + combined.getName());
-            boolean accepted = combined.trace(line);
+            System.out.println("Step 6 - Minimized DFA");
+
+            boolean accepted = MinimizedDFA.simulate(line);
             System.out.println("Result: " + (accepted
                     ? "DNA sequence matches the complete pattern.\n"
                     : "DNA sequence does NOT match the complete pattern.\n"));
+
 
             // EQUIVALENCE CHECK: the minimized DFA (Step 6) and the ε-NFA (Step 5) must agree
             if (accepted == nfaAccepted) {
